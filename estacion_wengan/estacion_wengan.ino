@@ -1,10 +1,9 @@
-
-
 // Wengan
 
 // Lyquid Cristal 
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
+
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
 
 //sleep
@@ -21,7 +20,7 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I
 
 // Sleep se aplica cada 8 segundos y se aplicaa un while segun la cantidad de ciclos (loop)
 volatile int f_wdt=1;
-#define int Loops = 225 //30 min / 8 seg = 225
+volatile int Loops = 225; //30 min / 8 seg = 225
 
 ISR(WDT_vect)
 {
@@ -120,7 +119,7 @@ void sleep(){
   if(f_wdt == 1)
   {
     /* Toggle the LED */
-    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    //digitalWrite(LED_PIN, !digitalRead(LED_PIN));
     
     /* Don't forget to clear the flag. */
     f_wdt = 0;
