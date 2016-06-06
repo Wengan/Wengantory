@@ -1,9 +1,55 @@
+
+
 // Wengan
 
 // Lyquid Cristal 
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+
+//sleep
+/*
+ * Sketch for testing sleep mode with wake up on WDT.
+ * Donal Morrissey - 2011.
+ *
+ */
+#include <avr/sleep.h>
+#include <avr/power.h>
+#include <avr/wdt.h>
+
+//#define LED_PIN (13)
+
+// Sleep se aplica cada 8 segundos y se aplicaa un while segun la cantidad de ciclos (loop)
+volatile int f_wdt=1;
+#define int Loops = 225 //30 min / 8 seg = 225
+
+ISR(WDT_vect)
+{
+  if(f_wdt == 0)
+  {
+    f_wdt=1;
+  }
+  else
+  {
+    Serial.println("WDT Overrun!!!");
+  }
+}
+
+void enterSleep(void)
+{
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);   /* EDIT: could also use SLEEP_MODE_PWR_DOWN for lowest power consumption. */
+  sleep_enable();
+  
+  /* Now enter sleep mode. */
+  sleep_mode();
+  
+  /* The program will continue from here after the WDT timeout*/
+  sleep_disable(); /* First thing to do is disable sleep. */
+  
+  /* Re-enable the peripherals. */
+  power_all_enable();
+}
+
 
 // DHT cosas
 #include "DHT.h" 
@@ -41,6 +87,23 @@ void setup()
   // Sensor DHT
   dht.begin();
   delay(500);
+  
+  /*** Setup the WDT ***/
+  
+  /* Clear the reset flag. */
+  MCUSR &= ~(1<<WDRF);
+  
+  /* In order to change WDE or the prescaler, we need to
+   * set WDCE (This will allow updates for 4 clock cycles).
+   */
+  WDTCSR |= (1<<WDCE) | (1<<WDE);
+
+  /* set new watchdog timeout prescaler value */
+  WDTCSR = 1<<WDP0 | 1<<WDP3; /* 8.0 seconds */
+  
+  /* Enable the WD interrupt (note no reset). */
+  WDTCSR |= _BV(WDIE);
+  
 }
 
 void loop()
@@ -52,9 +115,25 @@ void loop()
   sleep();
 
 }
+
 void sleep(){
-  delay(300000);
+  if(f_wdt == 1)
+  {
+    /* Toggle the LED */
+    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    
+    /* Don't forget to clear the flag. */
+    f_wdt = 0;
+    
+    /* Re-enter sleep mode. */
+    for(int i=1;i<Loops;i++)
+      {
+      enterSleep(); 
+      }
+  }
+  
 }
+
 void conectarAlaRed(){
 
   mySerial.println("at+cipshut");
