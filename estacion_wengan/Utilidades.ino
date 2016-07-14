@@ -10,14 +10,14 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I
 
 */
 
-void mostrarpantalla(int a, int b, String c){
+/*void mostrarpantalla(int a, int b, String c){
  lcd.backlight();
  delay(100);
  lcd.setCursor(a,b);
  lcd.print(c);
  delay(2000);
  lcd.noBacklight();
- }
+ }*/
  
 void esperarRespuesta()
 {
