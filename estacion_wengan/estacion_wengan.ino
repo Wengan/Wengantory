@@ -1,11 +1,11 @@
 // Wengan
 
 // Lyquid Cristal 
-#include <LiquidCrystal_I2C.h>
+/*#include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
-
+*/
 //sleep
 /*
  * Sketch for testing sleep mode with wake up on WDT.
@@ -65,7 +65,7 @@ const String PUBLIC_KEY = "0lK0GjXQqRu7p2DW9xdV";
 const String PRIVATE_KEY = "D6YBNeP8MZsMgKzjWxZ6";
 
 // Variables
-float hum = 0, lluv = 0, rad = 0, temp = 0, wat = 0, mois;
+float hum = 0, lluv = 0, rad = 0, temp = 0, wat = 0, bat=0, panel=0, mois;
 // Moisture sensor cosas
 const int waterlevel =A0;
 // Drop 
@@ -74,6 +74,12 @@ const int waterlevel =A0;
 #define RADIACIONPIN A2
 // Moisture
 #define MOISTUREPIN A1
+// Voltaje Bateria
+#define BATERIA A4
+// Voltaje paneles
+#define PANELES A5
+// Ecendido de Sensore
+#define PowerPin 3
 
 void setup()
 {
@@ -102,6 +108,10 @@ void setup()
   
   /* Enable the WD interrupt (note no reset). */
   WDTCSR |= _BV(WDIE);
+
+  //Setear PowerPin
+  pinMode(PowerPin,OUTPUT);
+  digitalWrite(PowerPin,LOW);
   
 }
 
@@ -192,6 +202,10 @@ void subirDatos(){
   mySerial.print(temp);
   mySerial.print("&wat=");
   mySerial.print(wat);
+  mySerial.print("&bat=");
+  mySerial.print(bat);
+  mySerial.print("&panel=");
+  mySerial.print(panel);
   mySerial.println("\"");
   esperarRespuesta();
   
@@ -203,11 +217,20 @@ void subirDatos(){
 }
 
 void medirSensores(){
+  //Encender Sensores
+  digitalWrite(PowerPin,HIGH);
+  delay(100);
+  
   hum = dht.readHumidity(); //se lee la humedad
   temp = dht.readTemperature(); // se lee la temperatura
   wat=analogRead(waterlevel);
   rad = analogRead(RADIACIONPIN);
   lluv = analogRead(DROPPIN);
   mois = analogRead(MOISTUREPIN); 
+  bat = analogRead(BATERIA);
+  panel = analogRead(PANELES);
+  //Apagar Sensores
+  digitalWrite(PowerPin,LOW);
+  
 }
 
