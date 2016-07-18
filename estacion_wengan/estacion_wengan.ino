@@ -80,6 +80,8 @@ const int waterlevel =A0;
 #define PANELES A5
 // Ecendido de Sensore
 #define PowerPin 3
+//Cantida de Intentos para subir datos
+const int numIntentos=3;
 
 void setup()
 {
@@ -117,21 +119,32 @@ void setup()
 
 void loop()
 {
-  //Conectarse a la red
-/*
+  //Medir Sensores
   medirSensores();
-  conectarAlaRed();
-  subirDatos();
+
+  // Enviar datos 
+  powerUp(); // Encender GPRS
+  esperarRespuesta();
+
+  for(int j=1;j<numIntentos;j++){ // Intentar una cantidad de numIntentos enviar los datos
+    if (conectarAlaRed()){ 
+      delay(100);
+      if (subirDatos()){
+        delay(100); break;
+      }
+    }
+    
+    delay(100);
+  
+  }
+  powerDown();
+  esperarRespuesta();
+
+  //Enviar a dormir
   sleep();
-*/
 
-powerUp();
-esperarRespuesta();
-delay(10000);
 
-powerDown();
-esperarRespuesta();
-delay(10000);
+
 }
 
 void sleep(){
@@ -152,7 +165,7 @@ void sleep(){
   
 }
 
-void conectarAlaRed(){
+boolean conectarAlaRed(){
 
   mySerial.println("at+cipshut");
   esperarRespuesta();
@@ -160,6 +173,9 @@ void conectarAlaRed(){
   Serial.println( "=== Checkeando conexion a la red GPRS === la respuesta debe ser +CGREG: 1,5 sino no funciona");
   mySerial.println("at+cgreg?");
   esperarRespuesta();
+  
+  if(verificarRespuesta("+CGREG: 1,5")){return true;}
+  else{return false;} 
   
   Serial.println(" === Attach la SIM === ");
   mySerial.println("at+cgatt=1");
@@ -181,7 +197,7 @@ void conectarAlaRed(){
   esperarRespuesta();
 }
 
-void subirDatos(){
+boolean subirDatos(){
   mySerial.println("at+httpinit");
   esperarRespuesta();
   
@@ -211,7 +227,10 @@ void subirDatos(){
   
   mySerial.println("at+httpaction=0");
   esperarRespuesta();
-  
+
+  if(verificarRespuesta("+HTTPACTION: 0,200")){return true;}
+  else{return false;} 
+    
   mySerial.println("at+httpterm");
   esperarRespuesta();
 }

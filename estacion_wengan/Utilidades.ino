@@ -26,6 +26,22 @@ void esperarRespuesta()
    Serial.write(mySerial.read());
 }
 
+boolean verificarRespuesta(String RespuestaDeseada)
+{
+
+int largoResp = RespuestaDeseada.length()+1;
+char bufferuno[largoResp];
+RespuestaDeseada.toCharArray(bufferuno,largoResp);
+
+if (mySerial.find(bufferuno)){
+  return true;
+}
+else{
+  return false;
+}
+   
+}
+
 void powerUp()
 {
  pinMode(9, OUTPUT); 
