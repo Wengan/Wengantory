@@ -108,11 +108,20 @@ void setup()
 void loop()
 {
   //Conectarse a la red
+/*
   medirSensores();
   conectarAlaRed();
   subirDatos();
   sleep();
+*/
 
+powerUp();
+esperarRespuesta();
+delay(10000);
+
+powerDown();
+esperarRespuesta();
+delay(10000);
 }
 
 void sleep(){

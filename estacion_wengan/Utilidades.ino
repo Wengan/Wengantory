@@ -26,3 +26,26 @@ void esperarRespuesta()
    Serial.write(mySerial.read());
 }
 
+void powerUp()
+{
+ pinMode(9, OUTPUT); 
+ digitalWrite(9,LOW);
+ delay(1000);
+ digitalWrite(9,HIGH);
+ delay(2000);
+ digitalWrite(9,LOW);
+ delay(3000);
+}
+
+
+void powerDown()
+{
+ pinMode(9, OUTPUT); 
+ digitalWrite(9,LOW);
+ delay(1000);
+ digitalWrite(9,HIGH);
+ delay(2000);
+ digitalWrite(9,LOW);
+ delay(3000);
+}
+
