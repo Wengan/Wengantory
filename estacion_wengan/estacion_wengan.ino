@@ -141,7 +141,7 @@ void loop()
   esperarRespuesta();
 
   //Enviar a dormir
-  sleep();
+  //sleep();
 
 
 
@@ -166,38 +166,51 @@ void sleep(){
 }
 
 boolean conectarAlaRed(){
-
+double espera = 3000;
   mySerial.println("at+cipshut");
+  Serial.println("at+cipshut");
   esperarRespuesta();
-  
+  delay(espera);
+
+  while(!verificarRespuesta("+CGREG: 1,5")){
   Serial.println( "=== Checkeando conexion a la red GPRS === la respuesta debe ser +CGREG: 1,5 sino no funciona");
   mySerial.println("at+cgreg?");
-  esperarRespuesta();
-  
-  if(verificarRespuesta("+CGREG: 1,5")){return true;}
-  else{return false;} 
+  //esperarRespuesta();
+  delay(espera*2);
+  }
+//  if(verificarRespuesta("+CGREG: 1,5")){return true;}
+//  else{return false;} 
   
   Serial.println(" === Attach la SIM === ");
   mySerial.println("at+cgatt=1");
   esperarRespuesta();
+  delay(espera);
   
   mySerial.println("at+sapbr=3,1,\"Contype\",\"GPRS\"");
   esperarRespuesta();
+  delay(espera);
   
   mySerial.println("at+sapbr=3,1,\"APN\",\"internet.simple\"");
   esperarRespuesta();
+  delay(espera);
   
   mySerial.println("at+sapbr=3,1,\"USER\",\"\"");
   esperarRespuesta();
+  delay(espera);
   
   mySerial.println("at+sapbr=3,1,\"PWD\",\"\"");
   esperarRespuesta();
+  delay(espera);
   
-  mySerial.println("at+sapbr=1,1");
-  esperarRespuesta();
+//  mySerial.println("at+sapbr=1,1");
+//  esperarRespuesta();
+//  delay(espera);
+
+  return true;
 }
 
 boolean subirDatos(){
+  delay(5000);
   mySerial.println("at+httpinit");
   esperarRespuesta();
   

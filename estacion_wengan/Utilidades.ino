@@ -44,6 +44,7 @@ else{
 
 void powerUp()
 {
+  
  pinMode(9, OUTPUT); 
  digitalWrite(9,LOW);
  delay(1000);
@@ -51,6 +52,9 @@ void powerUp()
  delay(2000);
  digitalWrite(9,LOW);
  delay(3000);
+
+while(!verificarRespuesta("READY"))continue;
+
 }
 
 
