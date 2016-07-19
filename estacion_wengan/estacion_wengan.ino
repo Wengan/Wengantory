@@ -30,7 +30,7 @@ ISR(WDT_vect)
   }
   else
   {
-    Serial.println("WDT Overrun!!!");
+    //Serial.println("WDT Overrun!!!");
   }
 }
 
@@ -175,7 +175,7 @@ double espera = 3000;
   while(!verificarRespuesta("+CGREG: 1,5")){
   Serial.println( "=== Checkeando conexion a la red GPRS === la respuesta debe ser +CGREG: 1,5 sino no funciona");
   mySerial.println("at+cgreg?");
-  //esperarRespuesta();
+  esperarRespuesta();
   delay(espera*2);
   }
 //  if(verificarRespuesta("+CGREG: 1,5")){return true;}
@@ -202,9 +202,9 @@ double espera = 3000;
   esperarRespuesta();
   delay(espera);
   
-//  mySerial.println("at+sapbr=1,1");
-//  esperarRespuesta();
-//  delay(espera);
+  mySerial.println("at+sapbr=1,1");
+  esperarRespuesta();
+  delay(espera);
 
   return true;
 }
@@ -212,10 +212,12 @@ double espera = 3000;
 boolean subirDatos(){
   delay(5000);
   mySerial.println("at+httpinit");
+  delay(5000);
   esperarRespuesta();
   
   mySerial.println("at+httppara=\"CID\",1");
   esperarRespuesta();
+  delay(5000);
   
   mySerial.print("at+httppara=\"URL\",\"data.sparkfun.com/input/");
   mySerial.print(PUBLIC_KEY);
@@ -231,21 +233,24 @@ boolean subirDatos(){
   mySerial.print(temp);
   mySerial.print("&wat=");
   mySerial.print(wat);
-  mySerial.print("&bat=");
-  mySerial.print(bat);
-  mySerial.print("&panel=");
-  mySerial.print(panel);
+//  mySerial.print("&bat=");
+//  mySerial.print(bat);
+//  mySerial.print("&panel=");
+//  mySerial.print(panel);
   mySerial.println("\"");
+  delay(5000);
   esperarRespuesta();
   
   mySerial.println("at+httpaction=0");
+  delay(5000);
   esperarRespuesta();
-
-  if(verificarRespuesta("+HTTPACTION: 0,200")){return true;}
-  else{return false;} 
+  boolean f_subirDatos = false;
+  if(verificarRespuesta("+HTTPACTION:0,200,10")){f_subirDatos = true;}
+//  else{return false;} 
     
   mySerial.println("at+httpterm");
   esperarRespuesta();
+  return f_subirDatos;
 }
 
 void medirSensores(){
