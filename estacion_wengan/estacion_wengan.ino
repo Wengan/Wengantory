@@ -67,7 +67,7 @@ const String PRIVATE_KEY = "D6YBNeP8MZsMgKzjWxZ6";
 // Variables
 float hum = 0, lluv = 0, rad = 0, temp = 0, wat = 0, bat=0, panel=0, mois;
 // Moisture sensor cosas
-const int waterlevel =A0;
+const int waterlevel =A4;
 // Drop 
 #define DROPPIN A3
 // Sensor de Radiacion
@@ -75,7 +75,7 @@ const int waterlevel =A0;
 // Moisture
 #define MOISTUREPIN A1
 // Voltaje Bateria
-#define BATERIA A4
+#define BATERIA A0
 // Voltaje paneles
 #define PANELES A5
 // Ecendido de Sensore
@@ -175,7 +175,7 @@ double espera = 3000;
   while(!verificarRespuesta("+CGREG: 1,5")){
   Serial.println( "=== Checkeando conexion a la red GPRS === la respuesta debe ser +CGREG: 1,5 sino no funciona");
   mySerial.println("at+cgreg?");
-  esperarRespuesta();
+  //esperarRespuesta();
   delay(espera*2);
   }
 //  if(verificarRespuesta("+CGREG: 1,5")){return true;}
@@ -232,9 +232,9 @@ boolean subirDatos(){
   mySerial.print("&temp=");
   mySerial.print(temp);
   mySerial.print("&wat=");
-  mySerial.print(wat);
-//  mySerial.print("&bat=");
 //  mySerial.print(bat);
+//  mySerial.print("&bat=");
+  mySerial.print(wat); // imprime el valor de la bateria en la parte de water level
 //  mySerial.print("&panel=");
 //  mySerial.print(panel);
   mySerial.println("\"");
@@ -261,11 +261,13 @@ void medirSensores(){
   hum = dht.readHumidity(); //se lee la humedad
   temp = dht.readTemperature(); // se lee la temperatura
   wat=analogRead(waterlevel);
+  wat = 5000*wat/1024;
   rad = analogRead(RADIACIONPIN);
   lluv = analogRead(DROPPIN);
   mois = analogRead(MOISTUREPIN); 
   bat = analogRead(BATERIA);
   panel = analogRead(PANELES);
+  Serial.println(wat);
   //Apagar Sensores
   digitalWrite(PowerPin,LOW);
   
